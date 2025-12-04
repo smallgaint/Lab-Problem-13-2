@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <fstream>
 
 using namespace std;
 
@@ -7,106 +9,94 @@ int daysInMonth(int month, int year);
 int dayOfWeek(int month, int day, int year);
 
 int main() {
-	int monthInput;
-	int year;
-	int day;
-	string month, dayOftheWeek;
-	string calendar[] = { " 1 2 3 4 5 6 7 ",
-	" 2 3 4 5 6 7 8 9 10 11 12 13 14 ",
-	" 9 10 11 12 13 14 15 16 17 18 19 20 21 ",
-	"16 17 18 19 20 21 22 23 24 25 26 27 28 ",
-	"23 24 25 26 27 28 29 30 31 ",
-	"30 31 " };
+	string monthInput;
+	int year, month, dow;
+	string calendar[] = { 
+		"                   1  2  3  4  5  6  7 ",
+		" 2  3  4  5  6  7  8  9 10 11 12 13 14 ",
+		" 9 10 11 12 13 14 15 16 17 18 19 20 21 ",
+		"16 17 18 19 20 21 22 23 24 25 26 27 28 ",
+		"23 24 25 26 27 28 29 30 31             ",
+		"30 31                                  " };
+	string weekDays = "Su Mo Tu We Th Fr Sa";
 
-	while (true) {
-		cout << "Enter a month and year or Q to quit: ";
-		cin >> monthInput >> day >> year;
+	cout << "Enter a month and year or Q to quit: ";
+	cin >> monthInput;
+	if (monthInput == "Q" || monthInput == "q") {
+		return 0;
+	}
+	cin >> year;
 
-		if (cin.fail()) {
-			return 0;
-		}
 
-		switch (monthInput) {
-			case 1:
-				month = "January";
-				break;
-			case 2:
-				month = "February";
-				break;
-			case 3:
-				month = "March";
-				break;
-			case 4:
-				month = "April";
-				break;
-			case 5:
-				month = "May";
-				break;
-			case 6:
-				month = "June";
-				break;
-			case 7:
-				month = "July";
-				break;
-			case 8:
-				month = "August";
-				break;
-			case 9:
-				month = "September";
-				break;
-			case 10:
-				month = "October";
-				break;
-			case 11:
-				month = "November";
-				break;
-			case 12:
-				month = "December";
-				break;
-			default:
-				cout << "Invalid month." << endl;
-				continue;
-		}
-
-		if (year < 1582) {
-			cout << "Year must be 1582 or later." << endl;
-			continue;
-		}
-
-		if (day < 1 || day > daysInMonth(monthInput, year)) {
-			cout << "Invalid day for " << month << " " << year << "." << endl;
-			continue;
-		}
-
-		int dow = dayOfWeek(monthInput, day, year);
-		switch (dow) {
-			case 0:
-				dayOftheWeek = "Saturday";
-				break;
-			case 1:
-				dayOftheWeek = "Sunday";
-				break;
-			case 2:
-				dayOftheWeek = "Monday";
-				break;
-			case 3:
-				dayOftheWeek = "Tuesday";
-				break;
-			case 4:
-				dayOftheWeek = "Wednesday";
-				break;
-			case 5:
-				dayOftheWeek = "Thursday";
-				break;
-			case 6:
-				dayOftheWeek = "Friday";
-				break;
-		}
-
-		cout << dayOftheWeek << ", " << month << " " << day << ", " << year << endl;
+	if (monthInput == "January") {
+		month = 1;
+	}else if(monthInput == "February") {
+		month = 2;
+	}else if(monthInput == "March") {
+		month = 3;
+	}else if(monthInput == "April") {
+		month = 4;
+	}else if(monthInput == "May") {
+		month = 5;
+	}else if(monthInput == "June") {
+		month = 6;
+	}else if(monthInput == "July") {
+		month = 7;
+	}else if(monthInput == "August") {
+		month = 8;
+	}else if(monthInput == "September") {
+		month = 9;
+	}else if(monthInput == "October") {
+		month = 10;
+	}else if(monthInput == "November") {
+		month = 11;
+	}else if(monthInput == "December") {
+		month = 12;
+	}
+	else {
+		cout << "Invalid month name." << endl;
+		return 1;
 	}
 
+	if (year < 1582) {
+		cout << "Year must be 1582 or later." << endl;
+		return 1;
+	}
 
+	dow = dayOfWeek(month, 1, year);
+	cout << monthInput << " " << year << endl;
+	cout << weekDays << endl;
+	string days = to_string(daysInMonth(month, year));
+
+	for (int i = 0; i < (dow > 1) ? 5: 6; i++) {
+		string line = calendar[i].substr(21 - (dow) * 3, 21);
+		if (line.find(days) < line.length()) {
+			line = line.substr(0, line.find(days) + days.length());
+			cout << line << endl;
+			break;
+		}
+		cout << line << endl;
+	}	
+
+	cout << endl;
+	string outFileName;
+	cout << "Output file: ";
+	cin >> outFileName;
+
+	ofstream outFile(outFileName);
+	outFile << monthInput << " " << year << endl;
+	outFile << weekDays << endl;
+	for (int i = 0; i < (dow > 1) ? 5 : 6; i++) {
+		string line = calendar[i].substr(21 - (dow) * 3, 21);
+		if (line.find(days) < line.length()) {
+			line = line.substr(0, line.find(days) + days.length());
+			outFile << line << endl;
+			break;
+		}
+		outFile << line << endl;
+	}
+	outFile.close();
+	return 0;
 }
 
 bool isLeapYear(int year) {
