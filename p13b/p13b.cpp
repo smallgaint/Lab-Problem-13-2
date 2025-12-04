@@ -4,15 +4,17 @@ using namespace std;
 
 bool isLeapYear(int year);
 int daysInMonth(int month, int year);
+int dayOfWeek(int month, int day, int year);
 
 int main() {
 	int monthInput;
 	int year;
-	string month;
+	int day;
+	string month, dayOftheWeek;
 
 	while (true) {
 		cout << "Enter a month and year or Q to quit: ";
-		cin >> monthInput >> year;
+		cin >> monthInput >> day >> year;
 
 		if (cin.fail()) {
 			return 0;
@@ -65,7 +67,37 @@ int main() {
 			continue;
 		}
 
-		cout << month << " " << year << " has " << daysInMonth(monthInput, year) << " days." << endl;
+		if (day < 1 || day > daysInMonth(monthInput, year)) {
+			cout << "Invalid day for " << month << " " << year << "." << endl;
+			continue;
+		}
+
+		int dow = dayOfWeek(monthInput, day, year);
+		switch (dow) {
+			case 0:
+				dayOftheWeek = "Saturday";
+				break;
+			case 1:
+				dayOftheWeek = "Sunday";
+				break;
+			case 2:
+				dayOftheWeek = "Monday";
+				break;
+			case 3:
+				dayOftheWeek = "Tuesday";
+				break;
+			case 4:
+				dayOftheWeek = "Wednesday";
+				break;
+			case 5:
+				dayOftheWeek = "Thursday";
+				break;
+			case 6:
+				dayOftheWeek = "Friday";
+				break;
+		}
+
+		cout << dayOftheWeek << ", " << month << " " << day << ", " << year << endl;
 	}
 
 
@@ -96,4 +128,19 @@ int daysInMonth(int month, int year) {
 	else {
 		return 31;
 	}
+}
+
+int dayOfWeek(int month, int day, int year) {
+	int h, q, m, Y;
+	q = day;
+	if (month == 1 || month == 2) {
+		m = month + 12;
+		Y = year - 1;
+	}
+	else {
+		m = month;
+		Y = year;
+	}
+	h = (q + (26 * (m + 1)) / 10 + Y + (Y / 4) + 6 * (Y / 100) + (Y / 400)) % 7;
+	return h;
 }
